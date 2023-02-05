@@ -147,10 +147,10 @@ console.log (YillaraGoreKazananlar(fifaData, Finaller, Yillar, Kazananlar));
 	
 */
 
-function OrtalamaGolSayisi(arr) {
-	let toplamGol = arr.reduce ((total, item) => {
-		return total + item["Home Team Goals"] + item["Away Team Goals"];},0)
-	return (toplamGol / arr.length).toFixed(2);
+function OrtalamaGolSayisi(cb_finaller) {
+	let toplamGol = cb_finaller.reduce ((toplamGolSayisi, item) => {
+		return toplamGolSayisi + item["Home Team Goals"] + item["Away Team Goals"];},0)
+	return (toplamGol / cb_finaller.length).toFixed(2);
 } 
 console.log(OrtalamaGolSayisi(Finaller(fifaData)));
 
@@ -163,35 +163,90 @@ console.log(OrtalamaGolSayisi(Finaller(fifaData)));
 	İpucu: "takım kısaltmaları" (team initials) için datada araştırma yapın!
 İpucu: `.reduce` Kullanın*/
 
-function UlkelerinKazanmaSayilari(/* kodlar buraya */) {
-	
-    /* kodlar buraya */
-	
+let initials = [];
+
+Finaller(fifaData).forEach(i=> {
+  if (!initials.includes(i["Home Team Initials"])) {
+    initials.push(i["Home Team Initials"]);
+  }
+  if (!initials.includes(i["Away Team Initials"])) {
+    initials.push(i["Away Team Initials"])
+  }
+})
+
+function UlkelerinKazanmaSayilari(data, initials) {
+  let kazananTakimlar = {};
+  initials.forEach(i=> {
+    kazananTakimlar[i] = 0;
+  })
+  Finaller(data).forEach((i) => {
+    if (i['Home Team Goals'] > i['Away Team Goals']) {
+      kazananTakimlar[i['Home Team Initials']]++
+    } else {
+      kazananTakimlar[i['Away Team Initials']]++
+    }
+  })
+  return kazananTakimlar;
 }
+console.log(UlkelerinKazanmaSayilari(fifaData, initials));
 
 
 
 /*  BONUS 2:  
 EnCokGolAtan() isminde bir fonksiyon yazın, `data` yı parametre olarak alsın ve Dünya kupası finallerinde en çok gol atan takımı döndürsün */
 
-function EnCokGolAtan(/* kodlar buraya */) {
-	
-    /* kodlar buraya */
-	
+function EnCokGolAtan(data, initials) {
+	let takimlar = {};
+	initials.forEach((i) => {
+		takimlar[i] = 0;
+	})
+	Finaller(data).forEach((i) => {
+		takimlar[i["Home Team Name"]] += i["Home Team Goals"];
+		takimlar[i["Away Team Name"]] += i["Away Team Goals"];
+	})
+
+	let enFazlaGol = 0; 
+	let enFazlaGolAtan ="";
+
+	for (let key in takimlar) {
+		if(takimlar[key]>enFazlaGol) {
+			enFazlaGol = takimlar[key];
+			enFazlaGolAtan = key;
+		}
+	}
+	return enFazlaGolAtan;
 }
+console.log(EnCokGolAtan(fifaData, initials));
+
 
 
 /*  BONUS 3: 
 EnKotuDefans() adında bir fonksiyon yazın, `data` yı parametre olarak alsın ve Dünya kupasında finallerinde en çok golü yiyen takımı döndürsün*/
 
-function EnKotuDefans(/* kodlar buraya */) {
-	
-    /* kodlar buraya */
-	
+function EnKotuDefans(data, initials) {
+	let takimlar = {};
+	initials.forEach((i) => {
+		takimlar[i] = 0;
+	})
+	Finaller(data).forEach((i) => {
+		takimlar[i["Home Team Name"]] += i["Home Team Goals"];
+		takimlar[i["Away Team Name"]] += i["Away Team Goals"];
+	})
+
+	let enAzGol = 0; 
+	let enAzGolAtan ="";
+
+	for (let key in takimlar) {
+		if(takimlar[key]<enAzGol) {
+			enAzGol = takimlar[key];
+			enAzGolAtan = key;
+		}
+	}
+	return enAzGolAtan;
 }
+console.log(EnKotuDefans(fifaData, initials));
 
 
-/* Hala vaktiniz varsa, README dosyasında listelenen hedeflerden istediğinizi aşağıdaki boşluğa yazabilirsiniz. */
 
 
 /* Bu satırın aşağısındaki kodları lütfen değiştirmeyin */
